@@ -1,13 +1,17 @@
+import 'dart:io';
+
 class Medicine {
-  final String name;
-  final double price;
-  final String category;
-  final String imageUrl;
+  String name;
+  double price;
+  String category;
+  String? imageUrl; // For online image
+  File? imageFile;  // For local image
 
   Medicine({
     required this.name,
     required this.price,
     required this.category,
-    required this.imageUrl,
+    this.imageUrl,
+    this.imageFile,
   });
 }

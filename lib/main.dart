@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:device_preview/device_preview.dart';
-import 'provider/cart_provider.dart';
+import 'package:flutter/foundation.dart'; // for kReleaseMode
 
-import 'splashscreen.dart';
+// Screens
+import 'features/splash/splashscreen.dart';
+import 'features/home/main_layout.dart';
+import 'features/home/settings/profile_screen.dart';
+import 'features/home/settings/change_password_screen.dart';
+import 'features/home/settings/notification_screen.dart';
+import 'features/home/settings/theme_screen.dart';
+import 'features/home/settings/language_screen.dart';
+import 'features/home/settings/inventory_screen.dart';
+import 'features/home/settings/staff_screen.dart';
+import 'features/home/settings/transaction_screen.dart';
+import 'features/home/settings/help_screen.dart';
+import 'features/home/settings/support_screen.dart';
+import 'features/home/settings/about_screen.dart';
 
 void main() {
   runApp(
     DevicePreview(
-      enabled: true,
-      tools: const [...DevicePreview.defaultTools],
-      builder: (context) => MultiProvider(
-        providers: [ChangeNotifierProvider(create: (_) => CartProvider())],
-        child: const MyApp(),
-      ),
+      enabled: !kReleaseMode, // Enable only in debug mode
+      builder: (context) => const MyApp(),
     ),
   );
 }
@@ -24,15 +32,33 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      useInheritedMediaQuery: true, // Important for DevicePreview
+      useInheritedMediaQuery: true,
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
       debugShowCheckedModeBanner: false,
-      title: 'Phamarcy Navatra',
+      title: 'Pharmacy App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        primarySwatch: Colors.blue,
+        scaffoldBackgroundColor: const Color(0xFFF4F7FE),
       ),
-      home: const Splashscreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const Splashscreen(),
+        '/main': (context) => const MainLayout(),
+
+        // Settings
+        '/profile': (context) => const ProfileScreen(),
+        '/change-password': (context) => const ChangePassword(),
+        '/notifications': (context) => const NotificationScreen(),
+        '/theme': (context) => const ThemeScreen(),
+        '/language': (context) => const LanguageScreen(),
+        '/inventory': (context) => const InventoryScreen(),
+        '/staff': (context) => const StaffScreen(),
+        '/transactions': (context) => const TransactionScreen(),
+        '/help': (context) => const HelpScreen(),
+        '/support': (context) => const SupportScreen(),
+        '/about': (context) => const AboutScreen(),
+      },
     );
   }
 }
