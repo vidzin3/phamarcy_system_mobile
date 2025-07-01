@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:phamarcy_system/features/auth/login.dart';
+import '../../../widgets/util/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 // screen
 import '/features/splash/splashscreen.dart';
@@ -16,11 +18,18 @@ import '/features/home/settings/help_screen.dart';
 import '/features/home/settings/support_screen.dart';
 import '/features/home/settings/about_screen.dart';
 
+
+
+
 class Settingscreen extends StatelessWidget {
+
   const Settingscreen({super.key});
+
+
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       backgroundColor: const Color(0xFFF4F7FE),
       appBar: AppBar(
@@ -42,10 +51,10 @@ class Settingscreen extends StatelessWidget {
             title: "Profile Information",
             subtitle: "View or update your profile",
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              // );
             },
           ),
           _buildSettingTile(
@@ -53,10 +62,10 @@ class Settingscreen extends StatelessWidget {
             title: "Change Password",
             subtitle: "Update your login credentials",
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ChangePassword()),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => const ChangePassword()),
+              // );
             },
           ),
           const SizedBox(height: 24),
@@ -70,10 +79,10 @@ class Settingscreen extends StatelessWidget {
             title: "Notifications",
             subtitle: "Control notification preferences",
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const NotificationScreen()),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => const NotificationScreen()),
+              // );
             },
           ),
           _buildSettingTile(
@@ -81,21 +90,18 @@ class Settingscreen extends StatelessWidget {
             title: "Theme",
             subtitle: "Light / Dark mode",
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ThemeScreen()),
-              );
             },
           ),
-          _buildSettingTile(
+
+      _buildSettingTile(
             icon: Icons.language,
             title: "Language",
             subtitle: "Choose your preferred language",
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LanguageScreen()),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => const LanguageScreen()),
+              // );
             },
           ),
           const SizedBox(height: 24),
@@ -109,10 +115,10 @@ class Settingscreen extends StatelessWidget {
             title: "Medicine Inventory",
             subtitle: "Manage stock and supplies",
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const InventoryScreen()),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => const InventoryScreen()),
+              // );
             },
           ),
           _buildSettingTile(
@@ -120,10 +126,10 @@ class Settingscreen extends StatelessWidget {
             title: "Staff & Roles",
             subtitle: "Manage pharmacists and permissions",
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const StaffScreen()),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => const StaffScreen()),
+              // );
             },
           ),
           _buildSettingTile(
@@ -131,10 +137,10 @@ class Settingscreen extends StatelessWidget {
             title: "Transaction History",
             subtitle: "View past sales and receipts",
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const TransactionScreen()),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => const TransactionScreen()),
+              // );
             },
           ),
           const SizedBox(height: 24),
@@ -148,10 +154,10 @@ class Settingscreen extends StatelessWidget {
             title: "Help & FAQ",
             subtitle: "Common questions and guides",
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const HelpScreen()),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => const HelpScreen()),
+              // );
             },
           ),
           _buildSettingTile(
@@ -185,7 +191,7 @@ class Settingscreen extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ChangePassword()),
+                  MaterialPageRoute(builder: (context) =>  LoginScreen()),
                 );
               },
             ),
@@ -218,76 +224,3 @@ class Settingscreen extends StatelessWidget {
     );
   }
 }
-
-// lib/features/settings/pages/
-
-//
-
-// profile_screen.dart
-// import 'package:flutter/material.dart';
-//
-// class ProfileScreen extends StatelessWidget {
-//   const ProfileScreen({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text("Profile Information"),
-//         backgroundColor: const Color(0xFF1976D2),
-//       ),
-//       body: const Center(
-//         child: Text("Profile details will appear here."),
-//       ),
-//     );
-//   }
-// }
-
-
-// main.dart
-//import 'package:flutter/material.dart';
-// import 'features/settings/pages/profile_screen.dart';
-// import 'features/settings/pages/change_password_screen.dart';
-// import 'features/settings/pages/notification_screen.dart';
-// import 'features/settings/pages/theme_screen.dart';
-// import 'features/settings/pages/language_screen.dart';
-// import 'features/settings/pages/inventory_screen.dart';
-// import 'features/settings/pages/staff_screen.dart';
-// import 'features/settings/pages/transaction_screen.dart';
-// import 'features/settings/pages/help_screen.dart';
-// import 'features/settings/pages/support_screen.dart';
-// import 'features/settings/pages/about_screen.dart';
-//
-// void main() {
-//   runApp(const MyApp());
-// }
-//
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       title: 'Pharmacy System',
-//       theme: ThemeData(primarySwatch: Colors.blue),
-//       initialRoute: '/',
-//       routes: {
-//         '/': (context) => const Settingscreen(),
-//
-//         // Settings destinations
-//         '/profile': (context) => const ProfileScreen(),
-//         '/change-password': (context) => const ChangePasswordScreen(),
-//         '/notifications': (context) => const NotificationScreen(),
-//         '/theme': (context) => const ThemeScreen(),
-//         '/language': (context) => const LanguageScreen(),
-//         '/inventory': (context) => const InventoryScreen(),
-//         '/staff': (context) => const StaffScreen(),
-//         '/transactions': (context) => const TransactionScreen(),
-//         '/help': (context) => const HelpScreen(),
-//         '/support': (context) => const SupportScreen(),
-//         '/about': (context) => const AboutScreen(),
-//       },
-//     );
-//   }
-// }

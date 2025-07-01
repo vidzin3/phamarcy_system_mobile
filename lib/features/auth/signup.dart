@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phamarcy_system/features/auth/login.dart';
 
 class SignupScreen extends StatelessWidget {
   final TextEditingController nameController = TextEditingController();
@@ -9,60 +10,112 @@ class SignupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
+      body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Sign Up',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                // App Logo
+                Image.asset(
+                  'assets/images/pharmacy_logo.png',
+                  height: 100,
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 16),
+
+                // Title
+                Text(
+                  'Create Account',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1976D2),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Name Field
                 TextField(
                   controller: nameController,
                   decoration: InputDecoration(
                     labelText: 'Full Name',
-                    border: OutlineInputBorder(),
+                    hintText: 'Enter your name',
                     prefixIcon: Icon(Icons.person),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(9),
+                    ),
+                    // filled: false,
+                    // fillColor: Colors.grey[100],
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
+
+                // Email Field
                 TextField(
                   controller: emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
-                    border: OutlineInputBorder(),
+                    hintText: 'Enter your email',
                     prefixIcon: Icon(Icons.email),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(9),
+                    ),
+                    // filled: true,
+                    // fillColor: Colors.grey[100],
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
+
+                // Password Field
                 TextField(
                   controller: passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Password',
-                    border: OutlineInputBorder(),
+                    hintText: 'Enter a password',
                     prefixIcon: Icon(Icons.lock),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(9),
+                    ),
+                    // filled: true,
+                    // fillColor: Colors.grey[100],
                   ),
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
+
+                // Register Button
                 ElevatedButton(
                   onPressed: () {
                     // TODO: Call MySQL signup API
                   },
-                  child: Text('Register'),
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF1976D2),
+                    foregroundColor: Colors.white,
                     minimumSize: Size.fromHeight(50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(9),
+                    ),
+                  ),
+                  child: Text(
+                    'Register',
+                    style: TextStyle(fontSize: 16,backgroundColor: Color(0xFF1976D2),color: Colors.white),
                   ),
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 16),
+
+                // Navigation to Login
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => LoginScreen()),
+                    );
                   },
-                  child: Text("Already have an account? Login"),
+                  child: Text(
+                    "Already have an account? Login",
+                    style: TextStyle(color: Colors.blue[800]),
+                  ),
                 ),
               ],
             ),
