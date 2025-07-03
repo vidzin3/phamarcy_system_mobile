@@ -15,7 +15,7 @@ class Dashscreen extends StatelessWidget {
         title: Row(
           children: [
             const CircleAvatar(
-              backgroundImage: AssetImage('assets/images/lokkru.jpg'),
+              backgroundImage: AssetImage('assets/images/vid_img.jpg'),
               backgroundColor: Colors.white,
               radius: 18,
             ),

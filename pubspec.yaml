@@ -39,6 +39,7 @@ flutter:
 
   assets:
     - assets/images/pharmacy_logo.png
+    - assets/images/vid_img.jpg
 
   fonts:
     - family: OpenSans

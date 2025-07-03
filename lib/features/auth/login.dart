@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phamarcy_system/features/auth/signup.dart';
+import '../home/main_layout.dart';
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -71,6 +72,11 @@ class LoginScreen extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () {
                     // TODO: Call MySQL login API
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => MainLayout()),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF1976D2),
