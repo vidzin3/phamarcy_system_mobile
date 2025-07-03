@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart'; // for kReleaseMode
+import 'package:phamarcy_system/plugins/DatabaseHelpers.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 // Screens
 import 'features/splash/splashscreen.dart';
@@ -17,7 +22,23 @@ import 'features/home/settings/help_screen.dart';
 import 'features/home/settings/support_screen.dart';
 import 'features/home/settings/about_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    // Use web implementation on the web.
+    databaseFactory = databaseFactoryFfiWeb;
+  } else {
+    // Use ffi on Linux and Windows.
+    if (Platform.isLinux || Platform.isWindows) {
+      databaseFactory = databaseFactoryFfi;
+      sqfliteFfiInit();
+    }
+  }
+  var db = await openDatabase(inMemoryDatabasePath);
+  print((await db.rawQuery('SELECT sqlite_version()')).first.values.first);
+  await db.close();
+
+  await DatabaseHelper().database;
   runApp(
     DevicePreview(
       enabled: !kReleaseMode, // Enable only in debug mode
