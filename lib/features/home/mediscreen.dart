@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:phamarcy_system/widgets/add_medicine_screen.dart';
-import '../../../models/medicine.dart';
-import '../../widgets/add_medicine_sheet.dart';
-import '../../widgets/medicine_cart.dart';
-
+import 'package:phamarcy_system/plugins/DatabaseHelpers.dart';
 
 class Mediscreen extends StatefulWidget {
   const Mediscreen({super.key});
@@ -13,53 +9,121 @@ class Mediscreen extends StatefulWidget {
 }
 
 class _MediscreenState extends State<Mediscreen> {
-  final List<Medicine> allMedicines = [
-    Medicine(
-      name: "Paracetamol",
-      price: 2.50,
-      category: "Pain Relief",
-      imageUrl:
-      "https://img.freepik.com/free-photo/white-pills-white-background_23-2147879387.jpg",
-    ),
-    Medicine(
-      name: "Vitamin C",
-      price: 1.99,
-      category: "Supplements",
-      imageUrl:
-      "https://img.freepik.com/free-photo/orange-vitamin-tablets-close-up_23-2148227207.jpg",
-    ),
-    Medicine(
-      name: "Cough Syrup",
-      price: 5.50,
-      category: "Cold & Flu",
-      imageUrl:
-      "https://img.freepik.com/free-photo/cough-syrup-bottle_53876-144799.jpg",
-    ),
-  ];
-
-  List<Medicine> filtered = [];
-  String query = "";
-  String? selectedCategory;
-  final categories = ["All", "Pain Relief", "Supplements", "Cold & Flu"];
+  List<Map<String, dynamic>> _categories = [];
+  List<Map<String, dynamic>> _medicines = [];
+  String? _selectedCategory;
+  String _searchQuery = '';
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    filtered = List.from(allMedicines);
+    _fetchInitialData();
   }
 
-  void filterMedicines() {
-    setState(() {
-      filtered = allMedicines.where((med) {
-        final matchQuery =
-        med.name.toLowerCase().contains(query.toLowerCase());
-        final matchCategory =
-        selectedCategory == null || selectedCategory == "All"
-            ? true
-            : med.category == selectedCategory;
-        return matchQuery && matchCategory;
-      }).toList();
-    });
+  Future<void> _fetchInitialData() async {
+    setState(() => _isLoading = true);
+    await _fetchCategories();
+    await _fetchMedicines();
+    setState(() => _isLoading = false);
+  }
+
+  Future<void> _fetchCategories() async {
+    try {
+      final db = await DatabaseHelper().database;
+      final results = await db.query('categories');
+      setState(() {
+        _categories = results;
+        if (_categories.isNotEmpty) {
+          _selectedCategory = _categories[0]['id'].toString();
+        }
+      });
+    } catch (e) {
+      _showError('Failed to load categories: $e');
+    }
+  }
+
+  Future<void> _fetchMedicines() async {
+    try {
+      final db = await DatabaseHelper().database;
+      final whereClause = _selectedCategory != null ? 'WHERE m.category_id = ?' : '';
+      final whereArgs = _selectedCategory != null ? [_selectedCategory] : [];
+      final query = '''
+        SELECT m.*, 
+               c.name AS category_name, 
+               u.name AS unit_name, 
+               t.name AS type_name 
+        FROM medicines m 
+        LEFT JOIN categories c ON m.category_id = c.id 
+        LEFT JOIN units u ON m.unit = u.id 
+        LEFT JOIN types t ON m.type = t.id
+        $whereClause
+      ''';
+      final results = await db.rawQuery(query, whereArgs);
+
+      setState(() {
+        _medicines = results.where((medicine) =>
+          medicine['name'].toString().toLowerCase().contains(_searchQuery.toLowerCase())
+        ).toList();
+      });
+    } catch (e) {
+      _showError('Failed to load medicines: $e');
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  Future<void> _updateMedicine(Map<String, dynamic> medicine) async {
+    final TextEditingController nameCtrl = TextEditingController(text: medicine['name']);
+    final TextEditingController priceCtrl = TextEditingController(text: medicine['price'].toString());
+
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Update Medicine'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameCtrl,
+              decoration: const InputDecoration(labelText: 'Name'),
+            ),
+            TextField(
+              controller: priceCtrl,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'Price'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final db = await DatabaseHelper().database;
+              await db.update(
+                'medicines',
+                {
+                  'name': nameCtrl.text,
+                  'price': double.tryParse(priceCtrl.text) ?? 0.0,
+                },
+                where: 'id = ?',
+                whereArgs: [medicine['id']],
+              );
+              Navigator.pop(context);
+              await _fetchMedicines();
+            },
+            child: const Text('Update'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -73,58 +137,58 @@ class _MediscreenState extends State<Mediscreen> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => AddMedicineScreen(
-                onAdd: (newMed) {
-                  setState(() {
-                    allMedicines.add(newMed);
-                    filterMedicines();
-                  });
-                },
-              ),
-            ),
-          );
+        onPressed: () async {
+          await Navigator.pushNamed(context, '/add_medicine');
+          await _fetchMedicines();
         },
         child: const Icon(Icons.add, color: Colors.white),
       ),
-
       body: Column(
         children: [
           _buildFilterBar(),
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: filtered.length,
-              itemBuilder: (_, i) {
-                final medicine = filtered[i];
-                return Dismissible(
-                  key: ValueKey(medicine.name),
-                  direction: DismissDirection.endToStart,
-                  onDismissed: (_) {
-                    setState(() {
-                      allMedicines.remove(medicine);
-                      filterMedicines();
-                    });
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('${medicine.name} deleted')),
+            child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView.builder(
+                  padding: const EdgeInsets.all(12),
+                  itemCount: _medicines.length,
+                  itemBuilder: (_, i) {
+                    final medicine = _medicines[i];
+                    return Dismissible(
+                      key: ValueKey(medicine['id']),
+                      direction: DismissDirection.endToStart,
+                      onDismissed: (_) async {
+                        final db = await DatabaseHelper().database;
+                        await db.delete(
+                          'medicines',
+                          where: 'id = ?',
+                          whereArgs: [medicine['id']],
+                        );
+                        await _fetchMedicines();
+                        _showError('${medicine['name']} deleted');
+                      },
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.delete, color: Colors.white),
+                      ),
+                      child: GestureDetector(
+                        onTap: () => _updateMedicine(medicine),
+                        child: Card(
+                          child: ListTile(
+                            title: Text(medicine['name'] ?? 'No Name'),
+                            subtitle: Text(medicine['category_name'] ?? 'No Category'),
+                            trailing: Text("${medicine['price']}៛"),
+                          ),
+                        ),
+                      ),
                     );
                   },
-                  background: Container(
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(Icons.delete, color: Colors.white),
-                  ),
-                  child: MedicineCard(medicine: medicine),
-                );
-              },
-            ),
+                ),
           ),
         ],
       ),
@@ -143,16 +207,17 @@ class _MediscreenState extends State<Mediscreen> {
               borderRadius: BorderRadius.circular(12),
               child: TextField(
                 onChanged: (val) {
-                  query = val;
-                  filterMedicines();
+                  setState(() {
+                    _searchQuery = val;
+                  });
+                  _fetchMedicines();
                 },
                 decoration: InputDecoration(
                   hintText: "Search medicine",
                   prefixIcon: const Icon(Icons.search),
                   filled: true,
                   fillColor: Colors.white,
-                  contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -165,10 +230,9 @@ class _MediscreenState extends State<Mediscreen> {
           Expanded(
             flex: 4,
             child: DropdownButtonFormField<String>(
-              value: selectedCategory ?? categories[0],
+              value: _selectedCategory,
               decoration: InputDecoration(
-                contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
@@ -176,12 +240,17 @@ class _MediscreenState extends State<Mediscreen> {
                   borderSide: BorderSide.none,
                 ),
               ),
-              items: categories
-                  .map((cat) => DropdownMenuItem(value: cat, child: Text(cat)))
-                  .toList(),
+              items: _categories.map((category) {
+                return DropdownMenuItem<String>(
+                  value: category['id'].toString(),
+                  child: Text(category['name'] ?? 'Unknown'),
+                );
+              }).toList(),
               onChanged: (val) {
-                selectedCategory = val;
-                filterMedicines();
+                setState(() {
+                  _selectedCategory = val;
+                });
+                _fetchMedicines();
               },
             ),
           ),
