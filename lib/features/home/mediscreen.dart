@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phamarcy_system/plugins/DatabaseHelpers.dart';
+import 'package:phamarcy_system/widgets/add_medicine_screen.dart';
 
 class Mediscreen extends StatefulWidget {
   const Mediscreen({super.key});
@@ -138,7 +139,18 @@ class _MediscreenState extends State<Mediscreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.blue,
         onPressed: () async {
-          await Navigator.pushNamed(context, '/add_medicine');
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => AddMedicineScreen(
+                onAdd: (newMed) {
+                  setState(() {
+                  });
+                },
+              ),
+            ),
+          );
+          // await Navigator.pushNamed(context, '/add_medicine');
           await _fetchMedicines();
         },
         child: const Icon(Icons.add, color: Colors.white),
@@ -180,7 +192,7 @@ class _MediscreenState extends State<Mediscreen> {
                         onTap: () => _updateMedicine(medicine),
                         child: Card(
                           child: ListTile(
-                            title: Text(medicine['name'] ?? 'No Name'),
+                            title: Text('${medicine['code']} - ${medicine['name']}' ?? 'No Name'),
                             subtitle: Text(medicine['category_name'] ?? 'No Category'),
                             trailing: Text("${medicine['price']}៛"),
                           ),

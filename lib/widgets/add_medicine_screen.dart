@@ -141,14 +141,6 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
           'unit': _selectedUnit,
           'price': _priceCtrl.text.toString()
         });
-
-        final pickedDate = await showDatePicker(
-          context: context,
-          initialDate: DateTime.now(),
-          firstDate: DateTime.now(),
-          lastDate: DateTime(2100),
-        );
-
         setState(() {
           if (result > 0) {
             _nameCtrl.text = "";
@@ -170,23 +162,6 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
           SnackBar(content: Text('Failed to Save: ${e.toString()}')),
         );
       }
-      // final newMed = Medicine(
-      //   name: _nameCtrl.text,
-      //   price: double.tryParse(_priceCtrl.text) ?? 0.0,
-      //   category: _selectedCategory,
-      //   imageFile: _pickedImage,
-      // );
-      // widget.onAdd(newMed);
-
-      // print(_nameCtrl.text.toString());
-      // print(_codeCtrl.text.toString());
-      // print(_selectedCategory.toString());
-      // print(_selectedType.toString());
-      // print(_selectedUnit.toString());
-      // print(_expiryDate..toString());
-      // print(_priceCtrl.text.toString());
-
-      
     }
   }
 
@@ -212,12 +187,12 @@ class _AddMedicineScreenState extends State<AddMedicineScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _nameCtrl,
+                controller: _codeCtrl,
                 decoration: const InputDecoration(labelText: 'Medicine Code'),
                 validator: (v) => v == null || v.isEmpty ? "Required" : null,
               ),
               TextFormField(
-                controller: _codeCtrl,
+                controller: _nameCtrl,
                 decoration: const InputDecoration(labelText: 'Medicine Name'),
                 validator: (v) => v == null || v.isEmpty ? "Required" : null,
               ),
