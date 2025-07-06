@@ -32,6 +32,7 @@ dependencies:
   shared_preferences: ^2.5.3
   provider: ^6.1.5
   multiselect: any
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -54,3 +55,12 @@ flutter:
     - family: playwrite
       fonts:
         - asset: assets/fonts/Playwrite.ttf
+
+flutter_icons:
+  # ios: true
+  android: true
+  # remove_alpha_ios: true
+  image_path_ios: "assets/images/pharmacy_logo.png"
+  image_path_android: "assets/images/pharmacy_logo.png"
+  # adaptive_icon_background: "assets/images/launcher/background.png"
+  # adaptive_icon_foreground: "assets/images/launcher/foreground.png"
